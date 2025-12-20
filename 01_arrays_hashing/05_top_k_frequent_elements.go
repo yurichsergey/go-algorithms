@@ -67,11 +67,25 @@ func main() {
 	}
 
 	for _, tc := range testCases {
-		result := topKFrequent(tc.nums, tc.k)
+		result := topKFrequentSorting(tc.nums, tc.k)
 		sort.Ints(result)
 		sort.Ints(tc.res)
 		fmt.Printf(
-			"nums: %v, k: %d, expected: %v, got: %v, match: %v\n",
+			"topKFrequentSorting. nums: %v, k: %d, expected: %v, got: %v, match: %v\n",
+			tc.nums,
+			tc.k,
+			tc.res,
+			result,
+			reflect.DeepEqual(result, tc.res),
+		)
+	}
+
+	for _, tc := range testCases {
+		result := topKFrequentMaxKey(tc.nums, tc.k)
+		sort.Ints(result)
+		sort.Ints(tc.res)
+		fmt.Printf(
+			"topKFrequentMaxKey. nums: %v, k: %d, expected: %v, got: %v, match: %v\n",
 			tc.nums,
 			tc.k,
 			tc.res,
@@ -81,7 +95,51 @@ func main() {
 	}
 }
 
-func topKFrequent(nums []int, k int) []int {
+/*
+Time complexity:
+O(n⋅k)
+Space complexity:
+O(n)
+
+n is the number of elements in the nums array.
+k is the number of frequent elements to find.
+*/
+func topKFrequentMaxKey(nums []int, k int) []int {
+	freq := map[int]int{}
+	for _, i := range nums {
+		freq[i] += 1
+	}
+
+	maxKeyByValue := func(m map[int]int) int {
+		r, rv := 0, 0
+		for k, v := range m {
+			if v > rv {
+				r = k
+				rv = v
+			}
+		}
+		return r
+	}
+
+	res := make([]int, 0, k)
+	for i := 0; i < k; i++ {
+		maxKey := maxKeyByValue(freq)
+		res = append(res, maxKey)
+		delete(freq, maxKey)
+	}
+	return res
+}
+
+/*
+Time complexity:
+O(n*log(m))
+Space complexity:
+O(n)
+
+n is the number of elements in the input
+m is the number of unique elements in the input
+*/
+func topKFrequentSorting(nums []int, k int) []int {
 
 	freq := map[int]int{}
 	for _, i := range nums {
