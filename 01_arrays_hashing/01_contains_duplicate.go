@@ -18,15 +18,6 @@ Input: nums = [1, 2, 3, 4]
 
 Output: false
 
-https://neetcode.io/problems/duplicate-integer/question
-
-Time complexity:
-O(n)
-O(n)
-Space complexity:
-O(n)
-O(n)
-n is the number of elements in the nums slice.
 */
 
 func main() {
@@ -56,3 +47,11 @@ func hasDuplicate(nums []int) bool {
 	}
 	return false
 }
+
+/*
+https://neetcode.io/problems/duplicate-integer/question
+
+Time complexity: O(n)
+Space complexity: O(n)
+n is the number of elements in the nums slice.
+*/

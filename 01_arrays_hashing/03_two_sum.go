@@ -35,11 +35,6 @@ Constraints:
 -10,000,000 <= target <= 10,000,000
 Only one valid answer exists.
 
-Recommended Time & Space Complexity
-You should aim for a solution with O(n) time and O(n) space, where n is the size of the input array.
-
-https://neetcode.io/problems/two-integer-sum/question?list=neetcode150
-
 */
 
 import (
@@ -77,3 +72,12 @@ func twoSum(nums []int, target int) []int {
 	}
 	return []int{-1, -1}
 }
+
+/*
+Recommended Time & Space Complexity
+You should aim for a solution with O(n) time and O(n) space, where n is the size of the input array.
+
+https://neetcode.io/problems/two-integer-sum/question?list=neetcode150
+
+
+*/
