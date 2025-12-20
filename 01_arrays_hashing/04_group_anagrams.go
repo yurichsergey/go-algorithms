@@ -57,13 +57,17 @@ func main() {
 		},
 	}
 
-	for _, tc := range testCases {
-		// Since the order of sublists and elements within sublists doesn't matter for correctness but matters
-		// for equality check we just print it here as requested in the example.
-		// For a more robust test we would need to sort the result and expected.
-		fmt.Printf("Sorting. data: %v, expected: %v, got: %v\n", tc.data, tc.res, groupAnagramsBySorting(tc.data))
-		fmt.Printf("Alphabet. data: %v, expected: %v, got: %v\n", tc.data, tc.res, groupAnagramsByAlphabet(tc.data))
+	runTest := func(name string, f func([]string) [][]string) {
+		for _, tc := range testCases {
+			// Since the order of sublists and elements within sublists doesn't matter for correctness but matters
+			// for equality check we just print it here as requested in the example.
+			// For a more robust test we would need to sort the result and expected.
+			fmt.Printf("%s. data: %v, expected: %v, got: %v\n", name, tc.data, tc.res, f(tc.data))
+		}
 	}
+
+	runTest("Sorting", groupAnagramsBySorting)
+	runTest("Alphabet", groupAnagramsByAlphabet)
 }
 
 func groupAnagramsByAlphabet(strs []string) [][]string {

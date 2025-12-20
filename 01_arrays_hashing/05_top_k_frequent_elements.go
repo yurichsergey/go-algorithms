@@ -45,33 +45,31 @@ func main() {
 		{nums: []int{7, 7}, k: 1, res: []int{7}},
 	}
 
-	for _, tc := range testCases {
-		result := topKFrequentSorting(tc.nums, tc.k)
-		sort.Ints(result)
-		sort.Ints(tc.res)
-		fmt.Printf(
-			"topKFrequentSorting. nums: %v, k: %d, expected: %v, got: %v, match: %v\n",
-			tc.nums,
-			tc.k,
-			tc.res,
-			result,
-			reflect.DeepEqual(result, tc.res),
-		)
+	runTest := func(name string, f func([]int, int) []int) {
+		for _, tc := range testCases {
+			// Copy res to avoid modifying original test case during sort.Ints
+			expected := make([]int, len(tc.res))
+			copy(expected, tc.res)
+
+			result := f(tc.nums, tc.k)
+
+			sort.Ints(result)
+			sort.Ints(expected)
+
+			fmt.Printf(
+				"%s. nums: %v, k: %d, expected: %v, got: %v, match: %v\n",
+				name,
+				tc.nums,
+				tc.k,
+				expected,
+				result,
+				reflect.DeepEqual(result, expected),
+			)
+		}
 	}
 
-	for _, tc := range testCases {
-		result := topKFrequentMaxKey(tc.nums, tc.k)
-		sort.Ints(result)
-		sort.Ints(tc.res)
-		fmt.Printf(
-			"topKFrequentMaxKey. nums: %v, k: %d, expected: %v, got: %v, match: %v\n",
-			tc.nums,
-			tc.k,
-			tc.res,
-			result,
-			reflect.DeepEqual(result, tc.res),
-		)
-	}
+	runTest("topKFrequentSorting", topKFrequentSorting)
+	runTest("topKFrequentMaxKey", topKFrequentMaxKey)
 }
 
 /*

@@ -29,10 +29,14 @@ func main() {
 		{data: []int{1, 2, 3, 4}, res: false},
 	}
 
-	for _, tc := range testCases {
-		result := hasDuplicate(tc.data)
-		fmt.Printf("data: %v, expected: %v, got: %v\n", tc.data, tc.res, result)
+	runTest := func(name string, f func([]int) bool) {
+		for _, tc := range testCases {
+			result := f(tc.data)
+			fmt.Printf("%s. data: %v, expected: %v, got: %v\n", name, tc.data, tc.res, result)
+		}
 	}
+
+	runTest("hasDuplicate", hasDuplicate)
 }
 
 func hasDuplicate(nums []int) bool {

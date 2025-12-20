@@ -53,11 +53,15 @@ func main() {
 		{nums: []int{5, 5}, target: 10, res: []int{0, 1}},
 	}
 
-	for _, tc := range testCases {
-		result := twoSum(tc.nums, tc.target)
-		fmt.Printf("nums: %v, target: %d, expected: %v, got: %v, match: %v\n",
-			tc.nums, tc.target, tc.res, result, reflect.DeepEqual(tc.res, result))
+	runTest := func(name string, f func([]int, int) []int) {
+		for _, tc := range testCases {
+			result := f(tc.nums, tc.target)
+			fmt.Printf("%s. nums: %v, target: %d, expected: %v, got: %v, match: %v\n",
+				name, tc.nums, tc.target, tc.res, result, reflect.DeepEqual(tc.res, result))
+		}
 	}
+
+	runTest("twoSum", twoSum)
 }
 
 func twoSum(nums []int, target int) []int {
