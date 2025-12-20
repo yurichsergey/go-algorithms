@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 /*
@@ -79,12 +80,31 @@ func main() {
 	}
 
 	for _, tc := range testCases {
-		result := groupAnagramsBySorting(tc.data)
 		// Since the order of sublists and elements within sublists doesn't matter for correctness but matters
 		// for equality check we just print it here as requested in the example.
 		// For a more robust test we would need to sort the result and expected.
-		fmt.Printf("data: %v, expected: %v, got: %v\n", tc.data, tc.res, result)
+		fmt.Printf("Sorting. data: %v, expected: %v, got: %v\n", tc.data, tc.res, groupAnagramsBySorting(tc.data))
+		fmt.Printf("Alphabet. data: %v, expected: %v, got: %v\n", tc.data, tc.res, groupAnagramsByAlphabet(tc.data))
 	}
+}
+
+func groupAnagramsByAlphabet(strs []string) [][]string {
+
+	createFrequencyKey := func(s string) string {
+		m := [26]int{}
+		for _, r := range s {
+			m[r-'a'] += 1
+		}
+
+		var res strings.Builder
+		for i, count := range m {
+			res.WriteByte(byte('a' + i))
+			res.WriteString(strconv.Itoa(count))
+		}
+		return res.String()
+	}
+
+	return groupAnagrams(strs, createFrequencyKey)
 }
 
 func groupAnagramsBySorting(strs []string) [][]string {
@@ -111,6 +131,10 @@ func groupAnagramsBySorting(strs []string) [][]string {
 		return res
 	}
 
+	return groupAnagrams(strs, createFrequencyKey)
+}
+
+func groupAnagrams(strs []string, createFrequencyKey func(s string) string) [][]string {
 	m := map[string][]string{}
 	for _, s := range strs {
 		k := createFrequencyKey(s)
