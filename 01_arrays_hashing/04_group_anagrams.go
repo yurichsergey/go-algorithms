@@ -79,7 +79,7 @@ func main() {
 	}
 
 	for _, tc := range testCases {
-		result := groupAnagrams(tc.data)
+		result := groupAnagramsBySorting(tc.data)
 		// Since the order of sublists and elements within sublists doesn't matter for correctness but matters
 		// for equality check we just print it here as requested in the example.
 		// For a more robust test we would need to sort the result and expected.
@@ -87,7 +87,7 @@ func main() {
 	}
 }
 
-func groupAnagrams(strs []string) [][]string {
+func groupAnagramsBySorting(strs []string) [][]string {
 
 	createFrequencyKey := func(s string) string {
 		m := map[rune]int{}
@@ -114,14 +114,10 @@ func groupAnagrams(strs []string) [][]string {
 	m := map[string][]string{}
 	for _, s := range strs {
 		k := createFrequencyKey(s)
-		_, ok := m[k]
-		if !ok {
-			m[k] = []string{}
-		}
 		m[k] = append(m[k], s)
 	}
 
-	res := [][]string{}
+	res := make([][]string, 0, len(m))
 	for _, v := range m {
 		res = append(res, v)
 	}
