@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/heap"
 	"fmt"
 	"reflect"
 	"sort"
@@ -70,13 +71,60 @@ func main() {
 
 	runTest("topKFrequentSorting", topKFrequentSorting)
 	runTest("topKFrequentMaxKey", topKFrequentMaxKey)
+	runTest("topKFrequentPriorityQueue", topKFrequentPriorityQueue)
+}
+
+type FreqHeap [][2]int // [number, frequency]
+
+func (h FreqHeap) Len() int           { return len(h) }
+func (h FreqHeap) Less(i, j int) bool { return h[i][1] < h[j][1] } // min heap
+func (h FreqHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *FreqHeap) Push(x interface{}) {
+	*h = append(*h, x.([2]int))
+}
+func (h *FreqHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
 }
 
 /*
-Time complexity:
-O(n⋅k)
-Space complexity:
-O(n)
+Complexity Analysis
+Time complexity: O(n*log(k))
+Space complexity: O(n)
+
+n is the number of elements in the input nums array.
+k is the number of frequent elements to return.
+*/
+func topKFrequentPriorityQueue(nums []int, k int) []int {
+	freq := map[int]int{}
+	for _, i := range nums {
+		freq[i] += 1
+	}
+
+	h := &FreqHeap{}
+	heap.Init(h)
+
+	for num, freq := range freq {
+		heap.Push(h, [2]int{num, freq})
+		if len(*h) > k {
+			heap.Pop(h) // Remove the smallest frequency
+		}
+	}
+
+	res := make([]int, k)
+	for i := 0; i < k; i++ {
+		res[i] = heap.Pop(h).([2]int)[0]
+	}
+	return res
+}
+
+/*
+Time complexity: O(n⋅k)
+Space complexity: O(n)
 
 n is the number of elements in the nums array.
 k is the number of frequent elements to find.
@@ -108,10 +156,8 @@ func topKFrequentMaxKey(nums []int, k int) []int {
 }
 
 /*
-Time complexity:
-O(n*log(m))
-Space complexity:
-O(n)
+Time complexity: O(n*log(m))
+Space complexity: O(n)
 
 n is the number of elements in the input
 m is the number of unique elements in the input
