@@ -1,7 +1,6 @@
-package main
+package arrays_hashing_01
 
 import (
-	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -37,38 +36,6 @@ Constraints:
 strs[i] is made up of lowercase English letters.
 
 */
-
-func main() {
-	testCases := []struct {
-		data []string
-		res  [][]string
-	}{
-		{
-			data: []string{"act", "pots", "tops", "cat", "stop", "hat"},
-			res:  [][]string{{"hat"}, {"act", "cat"}, {"stop", "pots", "tops"}},
-		},
-		{
-			data: []string{"x"},
-			res:  [][]string{{"x"}},
-		},
-		{
-			data: []string{""},
-			res:  [][]string{{""}},
-		},
-	}
-
-	runTest := func(name string, f func([]string) [][]string) {
-		for _, tc := range testCases {
-			// Since the order of sublists and elements within sublists doesn't matter for correctness but matters
-			// for equality check we just print it here as requested in the example.
-			// For a more robust test we would need to sort the result and expected.
-			fmt.Printf("%s. data: %v, expected: %v, got: %v\n", name, tc.data, tc.res, f(tc.data))
-		}
-	}
-
-	runTest("Sorting", groupAnagramsBySorting)
-	runTest("Alphabet", groupAnagramsByAlphabet)
-}
 
 func groupAnagramsByAlphabet(strs []string) [][]string {
 

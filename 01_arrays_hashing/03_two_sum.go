@@ -1,4 +1,4 @@
-package main
+package arrays_hashing_01
 
 /*
 Two Sum
@@ -36,33 +36,6 @@ Constraints:
 Only one valid answer exists.
 
 */
-
-import (
-	"fmt"
-	"reflect"
-)
-
-func main() {
-	testCases := []struct {
-		nums   []int
-		target int
-		res    []int
-	}{
-		{nums: []int{3, 4, 5, 6}, target: 7, res: []int{0, 1}},
-		{nums: []int{4, 5, 6}, target: 10, res: []int{0, 2}},
-		{nums: []int{5, 5}, target: 10, res: []int{0, 1}},
-	}
-
-	runTest := func(name string, f func([]int, int) []int) {
-		for _, tc := range testCases {
-			result := f(tc.nums, tc.target)
-			fmt.Printf("%s. nums: %v, target: %d, expected: %v, got: %v, match: %v\n",
-				name, tc.nums, tc.target, tc.res, result, reflect.DeepEqual(tc.res, result))
-		}
-	}
-
-	runTest("twoSum", twoSum)
-}
 
 func twoSum(nums []int, target int) []int {
 	m := map[int]int{}

@@ -1,9 +1,7 @@
-package main
+package arrays_hashing_01
 
 import (
 	"container/heap"
-	"fmt"
-	"reflect"
 	"sort"
 )
 
@@ -35,45 +33,6 @@ Constraints:
 1 <= k <= number of distinct elements in nums.
 
 */
-
-func main() {
-	testCases := []struct {
-		nums []int
-		k    int
-		res  []int
-	}{
-		{nums: []int{1, 2, 2, 3, 3, 3}, k: 2, res: []int{2, 3}},
-		{nums: []int{7, 7}, k: 1, res: []int{7}},
-	}
-
-	runTest := func(name string, f func([]int, int) []int) {
-		for _, tc := range testCases {
-			// Copy res to avoid modifying original test case during sort.Ints
-			expected := make([]int, len(tc.res))
-			copy(expected, tc.res)
-
-			result := f(tc.nums, tc.k)
-
-			sort.Ints(result)
-			sort.Ints(expected)
-
-			fmt.Printf(
-				"%s. nums: %v, k: %d, expected: %v, got: %v, match: %v\n",
-				name,
-				tc.nums,
-				tc.k,
-				expected,
-				result,
-				reflect.DeepEqual(result, expected),
-			)
-		}
-	}
-
-	runTest("topKFrequentSorting", topKFrequentSorting)
-	runTest("topKFrequentMaxKey", topKFrequentMaxKey)
-	runTest("topKFrequentPriorityQueue", topKFrequentPriorityQueue)
-	runTest("topKFrequentBucketSort", topKFrequentBucketSort)
-}
 
 /*
 Complexity Analysis

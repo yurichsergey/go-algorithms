@@ -1,6 +1,4 @@
-package main
-
-import "fmt"
+package arrays_hashing_01
 
 /**
 Valid Anagram
@@ -24,26 +22,6 @@ Constraints:
 s and t consist of lowercase English letters.
 
 */
-
-func main() {
-	testCases := []struct {
-		s   string
-		t   string
-		res bool
-	}{
-		{s: "racecar", t: "carrace", res: true},
-		{s: "jar", t: "jam", res: false},
-	}
-
-	runTest := func(name string, f func(string, string) bool) {
-		for _, tc := range testCases {
-			result := f(tc.s, tc.t)
-			fmt.Printf("%s. s: %s, t: %s, expected: %v, got: %v\n", name, tc.s, tc.t, tc.res, result)
-		}
-	}
-
-	runTest("isAnagram", isAnagram)
-}
 
 func isAnagram(s string, t string) bool {
 
