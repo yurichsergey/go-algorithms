@@ -54,7 +54,5 @@ func twoSum(nums []int, target int) []int {
 Recommended Time & Space Complexity
 You should aim for a solution with O(n) time and O(n) space, where n is the size of the input array.
 
-https://neetcode.io/problems/two-integer-sum/question?list=neetcode150
-
 
 */

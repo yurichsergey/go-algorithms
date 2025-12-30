@@ -207,5 +207,4 @@ Hint 3
 Use the bucket sort algorithm to create n buckets, grouping numbers based on their frequencies from 1 to n.
 Then, pick the top k numbers from the buckets, starting from n down to 1.
 
-https://neetcode.io/problems/top-k-elements-in-list/question?list=neetcode150
 */

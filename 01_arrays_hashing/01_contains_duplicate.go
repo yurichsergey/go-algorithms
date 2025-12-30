@@ -31,7 +31,6 @@ func hasDuplicate(nums []int) bool {
 }
 
 /*
-https://neetcode.io/problems/duplicate-integer/question
 
 Time complexity: O(n)
 Space complexity: O(n)
