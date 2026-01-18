@@ -96,7 +96,7 @@ func longestConsecutiveSort(nums []int) int {
 	currInd := 0
 	for i := 1; i < len(uniqNums); i++ {
 		if uniqNums[currInd]+(i-currInd) != uniqNums[i] {
-			currInd = currInd + (i - currInd)
+			currInd = i
 			curLen = 1
 			continue
 		}
