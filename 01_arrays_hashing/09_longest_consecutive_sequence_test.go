@@ -43,7 +43,8 @@ func TestLongestConsecutive(t *testing.T) {
 	}{
 		{"BruteForce", longestConsecutiveBruteForce},
 		{"Sort", longestConsecutiveSort},
-		{"Optimal", longestConsecutive},
+		{"Hash Set", longestConsecutiveHashSet},
+		{"Hash Map", longestConsecutiveHashMap},
 	}
 
 	for _, tc := range testCases {
