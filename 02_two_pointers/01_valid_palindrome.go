@@ -44,6 +44,14 @@ Explanation: After filtering, we get "tabacat", which is not the same when rever
 
 */
 
+/*
+Complexity Analysis
+Time complexity: O(n)
+Space complexity: O(n)
+
+n is the length of the input string s
+*/
+
 func isPalindrome(s string) bool {
 	clearedString := regexp.MustCompile("[^a-zA-Z0-9]").ReplaceAllString(s, "")
 	clearedString = strings.ToLower(clearedString)
@@ -53,6 +61,40 @@ func isPalindrome(s string) bool {
 		if runes[i] != runes[n-1-i] {
 			return false
 		}
+	}
+	return true
+}
+
+/*
+*
+
+Complexity Analysis
+Time complexity: O(n)
+Space complexity: O(1)
+
+n is the number of characters in the input string s
+*/
+func isPalindromeEfficient(s string) bool {
+	n := len(s)
+	i := 0
+	j := n - 1
+	re := regexp.MustCompile("[a-zA-Z0-9]")
+	for i <= j {
+		if !re.MatchString(string(s[i])) {
+			i++
+			continue
+		}
+		if !re.MatchString(string(s[j])) {
+			j--
+			continue
+		}
+		//print(string(s[i]) + " -- " + string(s[j]) + "\n")
+		if strings.ToLower(string(s[i])) == strings.ToLower(string(s[j])) {
+			i++
+			j--
+			continue
+		}
+		return false
 	}
 	return true
 }

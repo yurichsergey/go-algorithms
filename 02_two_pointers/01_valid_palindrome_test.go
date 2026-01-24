@@ -77,6 +77,11 @@ func TestIsPalindrome(t *testing.T) {
 			if got != tc.want {
 				t.Fatalf("isPalindrome(%q) = %v; want %v", tc.s, got, tc.want)
 			}
+
+			gotEfficient := isPalindromeEfficient(tc.s)
+			if gotEfficient != tc.want {
+				t.Fatalf("isPalindromeEfficient(%q) = %v; want %v", tc.s, gotEfficient, tc.want)
+			}
 		})
 	}
 }
