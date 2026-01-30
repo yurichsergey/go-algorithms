@@ -55,12 +55,14 @@ Output: [[1,1,-2]]
 
 */
 
+/*
+Time & Space Complexity
+Time complexity: O(n3)
+Space complexity: O(m)
+Where m is the number of triplets and n is the length of the given array.
+*/
 func threeSumBruteForce(nums []int) [][]int {
 	sort.Ints(nums)
-	// freq := make(map[int]int)
-	// for _, num := range(nums) {
-	// 	freq[num]++
-	// }
 
 	res := map[[3]int]struct{}{}
 	for i := range nums {
