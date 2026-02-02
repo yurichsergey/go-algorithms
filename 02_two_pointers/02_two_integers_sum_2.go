@@ -73,27 +73,3 @@ func twoIntegersSum2(numbers []int, target int) []int {
 
 	return []int{i, j}
 }
-
-/*
-**Recommended Complexity**
-Target a solution with `O(n)` time complexity and `O(1)` space complexity, where `n` represents the length of
-the input array.
-
-**Hint 1**
-The naive approach involves examining all possible pairs in the array, resulting in `O(n^2)` complexity.
-Consider whether there's a more efficient method.
-
-**Hint 2**
-Consider how you might leverage the fact that the array is already sorted.
-
-**Hint 3**
-The two-pointer technique can be applied here. When `nums[0] + nums[n-1] > target`, we can deduce that `nums[n-1]`
-cannot be part of any valid pair. This is because `nums[n-1]` is the maximum value in the array—even when paired
-with `nums[0]` (the minimum value), the sum exceeds the target. Apply similar reasoning for the case when
-`nums[0] + nums[n-1] < target`.
-
-**Hint 4**
-Initialize two pointers: one at the array's beginning and another at its end. When the sum of values at both
-pointers exceeds the `target`, move the right pointer leftward; otherwise, move the left pointer rightward.
-Continue this process until a valid pair is discovered.
-*/

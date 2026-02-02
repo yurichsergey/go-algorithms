@@ -72,34 +72,3 @@ func productExceptSelf(nums []int) []int {
 	fmt.Println(string(leftJson))
 	return res
 }
-
-/*
-
-Recommended Time & Space Complexity
-You should aim for a solution as good or better than O(n) time and O(n) space,
-where n is the size of the input array.
-
-
-Hint 1
-A brute-force solution would be to iterate through the array with index i and compute
-the product of the array except for that index element. This would be an O(n^2) solution.
-Can you think of a better way?
-
-
-Hint 2
-Is there a way to avoid the repeated work? Maybe we can store the results of the repeated
-work in an array.
-
-
-Hint 3
-We can use the prefix and suffix technique. First, we iterate from left to right and store
-the prefix products for each index in a prefix array, excluding the current index's number.
-Then, we iterate from right to left and store the suffix products for each index in a suffix
-array, also excluding the current index's number. Can you figure out the solution from here?
-
-
-Hint 4
-We can use the stored prefix and suffix products to compute the result array by iterating
-through the array and simply multiplying the prefix and suffix products at each index.
-
-*/

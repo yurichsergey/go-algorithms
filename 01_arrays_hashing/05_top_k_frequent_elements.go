@@ -187,24 +187,3 @@ func topKFrequentSorting(nums []int, k int) []int {
 	}
 	return res
 }
-
-/*
-Recommended Time & Space Complexity
-You should aim for a solution with O(n) time and O(n) space, where n is the size of the input array.
-
-
-Hint 1
-A naive solution would be to count the frequency of each number and then sort the array based on each element’s
-frequency. After that, we would select the top k frequent elements. This would be an O(nlogn) solution.
-Though this solution is acceptable, can you think of a better way?
-
-
-Hint 2
-Can you think of an algorithm which involves grouping numbers based on their frequency?
-
-
-Hint 3
-Use the bucket sort algorithm to create n buckets, grouping numbers based on their frequencies from 1 to n.
-Then, pick the top k numbers from the buckets, starting from n down to 1.
-
-*/

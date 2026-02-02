@@ -29,10 +29,3 @@ func hasDuplicate(nums []int) bool {
 	}
 	return false
 }
-
-/*
-
-Time complexity: O(n)
-Space complexity: O(n)
-n is the number of elements in the nums slice.
-*/

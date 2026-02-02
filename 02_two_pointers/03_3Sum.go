@@ -84,6 +84,13 @@ func threeSumBruteForce(nums []int) [][]int {
 	return resTriplet
 }
 
+/*
+*
+Complexity Analysis
+Time complexity: O(n2)
+Space complexity: O(n)
+n is the number of elements in the input array nums.
+*/
 func threeSumHashMap(nums []int) [][]int {
 	sort.Ints(nums)
 	freq := make(map[int]int)

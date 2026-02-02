@@ -49,10 +49,3 @@ func isAnagram(s string, t string) bool {
 	}
 	return res
 }
-
-/*
-Recommended Time & Space Complexity
-You should aim for a solution with O(n + m) time and O(1) space, where n is the length of the string s and m is the
-length of the string t.
-
-*/

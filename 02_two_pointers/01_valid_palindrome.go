@@ -98,22 +98,3 @@ func isPalindromeEfficient(s string) bool {
 	}
 	return true
 }
-
-/**
-**Recommended Time & Space Complexity**
-
-Your solution should target `O(n)` time complexity and `O(1)` space complexity, where `n` represents the length of
-the string.
-
-**Hint 1**
-The straightforward approach involves creating a reversed copy of the string and comparing it with the original.
-While this achieves `O(n)` time, it requires `O(n)` additional space. Can you solve this without using extra space
-proportional to the input size?
-
-**Hint 2**
-What pattern can you identify from the palindrome definition or from analyzing the brute force approach?
-
-**Hint 3**
-Since a palindrome reads identically from both ends, characters at corresponding positions from the start and end
-should match. The two-pointer technique can efficiently verify this property.
-*/

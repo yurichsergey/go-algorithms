@@ -167,26 +167,3 @@ func longestConsecutiveHashMap(nums []int) int {
 	}
 	return res
 }
-
-/**
-Recommended Time & Space Complexity
-You should aim for a solution as good or better than O(n) time and O(n) space, where n is the size of the input array.
-
-
-Hint 1
-A brute force solution would be to consider every element from the array as the start of the sequence and
-count the length of the sequence formed with that starting element. This would be an O(n^2) solution.
-Can you think of a better way?
-
-
-Hint 2
-Is there any way to identify the start of a sequence? For example, in [1, 2, 3, 10, 11, 12],
-only 1 and 10 are the beginning of a sequence. Instead of trying to form a sequence for every number,
-we should only consider numbers like 1 and 10.
-
-
-Hint 3
-We can consider a number num as the start of a sequence if and only if num - 1 does not exist in the given array.
-We iterate through the array and only start building the sequence if it is the start of a sequence.
-This avoids repeated work. We can use a hash set for O(1) lookups by converting the array to a hash set.
-*/

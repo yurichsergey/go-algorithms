@@ -49,10 +49,3 @@ func twoSum(nums []int, target int) []int {
 	}
 	return []int{-1, -1}
 }
-
-/*
-Recommended Time & Space Complexity
-You should aim for a solution with O(n) time and O(n) space, where n is the size of the input array.
-
-
-*/

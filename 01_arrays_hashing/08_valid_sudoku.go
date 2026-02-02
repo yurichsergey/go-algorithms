@@ -114,23 +114,3 @@ func isValidSudoku(board [][]byte) bool {
 
 	return true
 }
-
-/*
-Recommended Time & Space Complexity
-You should aim for a solution as good or better than O(n^2) time and O(n^2) space, where n is the number of rows in the
-square grid.
-
-
-Hint 1
-Which data structure would you prefer to use for checking duplicates?
-
-
-Hint 2
-You can use a hash set for every row and column to check duplicates. But how can you efficiently check for the squares?
-
-
-Hint 3
-We can find the index of each square by the equation (row / 3) * 3 + (col / 3). Then we use hash set for O(1) lookups
-while inserting the number into its row, column and square it belongs to. We use separate hash maps for rows, columns,
-and squares.
-*/
