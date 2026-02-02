@@ -1,6 +1,8 @@
 package _2_two_pointers
 
-import "sort"
+import (
+	"sort"
+)
 
 /*
 
@@ -82,32 +84,32 @@ func threeSumBruteForce(nums []int) [][]int {
 	return resTriplet
 }
 
-/*
-# Recommended Complexity Target
+func threeSumHashMap(nums []int) [][]int {
+	sort.Ints(nums)
+	freq := make(map[int]int)
+	for _, num := range nums {
+		freq[num]++
+	}
+	res := map[[3]int]struct{}{}
+	for i := range nums {
+		freq[nums[i]]--
+		for j := i + 1; j < len(nums); j++ {
+			freq[nums[j]]--
+			target := -(nums[i] + nums[j])
 
-Aim for a solution with **O(n²) time complexity** and **O(1) space complexity**, where `n` represents the length of the
-input array.
+			if target < nums[j] {
+				continue
+			}
+			if freqVal, ok := freq[target]; ok && freqVal > 0 {
+				res[[3]int{nums[i], nums[j], target}] = struct{}{}
+			}
+			freq[nums[j]]++
+		}
+	}
 
-## Hint 1
-The naive approach of examining every possible combination of three elements would result in O(n³) complexity.
-Is there a more efficient method?
-
-## Hint 2
-Consider what advantages sorting the array might provide. How could you transform the problem equation to make it
-easier to solve?
-
-## Hint 3
-After sorting, iterate through the array using index `i`. Rearranging the sum equation `nums[i] + nums[j] + nums[k] = 0`
-gives us `nums[j] + nums[k] = -nums[i]`. For each position `i`, we need an efficient method to find valid `j` and `k`
-pairs while avoiding duplicates. What technique works well for finding two numbers that sum to a target in a sorted
-array?
-
-## Hint 4
-Use the two-pointer technique on elements after index `i` in the sorted array. Set `j` at the start and `k` at the end
-of this subarray, with `target = -nums[i]`. If `nums[j] + nums[k] < target`, move `j` forward to increase the sum.
-If `nums[j] + nums[k] > target`, move `k` backward to decrease the sum. How can you handle duplicate triplets?
-
-## Hint 5
-When you find `nums[j] + nums[k] == target`, add the triplet to your results. Then, advance `j` or retreat `k` while
-`j < k` and the values remain the same. This prevents adding duplicate triplets to your answer.
-*/
+	resTriplet := [][]int{}
+	for triplet := range res {
+		resTriplet = append(resTriplet, []int{triplet[0], triplet[1], triplet[2]})
+	}
+	return resTriplet
+}
