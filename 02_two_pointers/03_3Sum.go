@@ -107,12 +107,7 @@ func threeSumHashMap(nums []int) [][]int {
 			//	target,
 			//	freq,
 			//)
-			if target < nums[j] {
-				//fmt.Printf("SKIP target = %v\n", target)
-				freq[nums[j]]++
-				continue
-			}
-			if freqVal, ok := freq[target]; ok && freqVal > 0 {
+			if freqVal, ok := freq[target]; ok && freqVal > 0 && target >= nums[j] {
 				//fmt.Printf(
 				//	"FOUND = %v, freqVal = %v, ok = %v\n",
 				//	[3]int{nums[i], nums[j], target},
