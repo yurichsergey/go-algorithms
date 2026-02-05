@@ -77,11 +77,11 @@ func threeSumBruteForce(nums []int) [][]int {
 		}
 	}
 
-	resTriplet := [][]int{}
+	resList := [][]int{}
 	for triplet := range res {
-		resTriplet = append(resTriplet, []int{triplet[0], triplet[1], triplet[2]})
+		resList = append(resList, triplet[:])
 	}
-	return resTriplet
+	return resList
 }
 
 /*
@@ -128,9 +128,9 @@ func threeSumHashMap(nums []int) [][]int {
 	}
 	//fmt.Printf("\nres = %v\n", res)
 
-	resTriplet := [][]int{}
+	resList := [][]int{}
 	for triplet := range res {
-		resTriplet = append(resTriplet, []int{triplet[0], triplet[1], triplet[2]})
+		resList = append(resList, triplet[:])
 	}
-	return resTriplet
+	return resList
 }
