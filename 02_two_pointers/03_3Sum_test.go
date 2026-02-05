@@ -33,6 +33,11 @@ func TestThreeSum(t *testing.T) {
 			want: [][]int{{-2, 1, 1}},
 		},
 		{
+			name: "Example 4",
+			nums: []int{-2, 0, 1, 1, 2},
+			want: [][]int{{-2, 0, 2}, {-2, 1, 1}},
+		},
+		{
 			name: "All zeros",
 			nums: []int{0, 0, 0, 0},
 			want: [][]int{{0, 0, 0}},

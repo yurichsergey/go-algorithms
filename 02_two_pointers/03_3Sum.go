@@ -179,9 +179,13 @@ func threeSumTwoPointersEfficient(nums []int) [][]int {
 		l := i + 1
 		r := len(nums) - 1
 
+		// Really tricky, but it's obvious if the target is positive in the sorted array, there is no solution anymore
 		if target > 0 {
 			break
 		}
+		// The most tricky part is to avoid duplicate triplets here.
+		// We should not forget to skip the current element if it's the same as the previous one
+		// And we might do it only if the current element is not the first one
 		if i > 0 && target == nums[i-1] {
 			continue
 		}
@@ -196,7 +200,9 @@ func threeSumTwoPointersEfficient(nums []int) [][]int {
 				res = append(res, []int{nums[i], nums[l], nums[r]})
 				l++
 				r--
-				for l < r && nums[l] == nums[l+1] {
+				// The last trickest part is to skip the same element twice
+				// we also is comparing the current element with the previous one!
+				for l < r && nums[l] == nums[l-1] {
 					l++
 				}
 			}
