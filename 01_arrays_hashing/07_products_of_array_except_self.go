@@ -1,4 +1,4 @@
-package arrays_hashing_01
+package _01_arrays_hashing
 
 import (
 	"encoding/json"
