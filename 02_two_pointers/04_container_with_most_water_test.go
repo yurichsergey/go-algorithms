@@ -45,13 +45,36 @@ func TestMaxArea(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := maxArea(tt.heights); got != tt.want {
-				t.Errorf("maxArea() = %v, want %v", got, tt.want)
-			}
-		})
+	funcs := []struct {
+		name string
+		f    func([]int) int
+	}{
+		{"BruteForce", maxAreaBruteForce},
+		{"TwoPointers", maxAreaTwoPointers},
 	}
+
+	for _, fn := range funcs {
+		testHelperMaxArea(t, fn, tests)
+	}
+}
+
+func testHelperMaxArea(t *testing.T, fn struct {
+	name string
+	f    func([]int) int
+}, tests []struct {
+	name    string
+	heights []int
+	want    int
+}) {
+	t.Run(fn.name, func(t *testing.T) {
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				if got := fn.f(tt.heights); got != tt.want {
+					t.Errorf("%s() = %v, want %v", fn.name, got, tt.want)
+				}
+			})
+		}
+	})
 }
 
 // BenchmarkMaxArea allows you to compare the performance of different implementations
@@ -60,8 +83,21 @@ func BenchmarkMaxArea(b *testing.B) {
 	for i := 0; i < 1000; i++ {
 		heights[i] = i % 100
 	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		maxArea(heights)
+
+	funcs := []struct {
+		name string
+		f    func([]int) int
+	}{
+		{"BruteForce", maxAreaBruteForce},
+		{"TwoPointers", maxAreaTwoPointers},
+	}
+
+	for _, fn := range funcs {
+		b.Run(fn.name, func(b *testing.B) {
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				fn.f(heights)
+			}
+		})
 	}
 }

@@ -68,7 +68,7 @@ Time complexity: O(n2)
 Space complexity: O(1)
 n is the number of elements in the heights slice.
 */
-func maxArea(heights []int) int {
+func maxAreaBruteForce(heights []int) int {
 	maxArea := 0
 	for i := range heights {
 		for j := i + 1; j < len(heights); j++ {
@@ -76,6 +76,23 @@ func maxArea(heights []int) int {
 			if currentArea > maxArea {
 				maxArea = currentArea
 			}
+		}
+	}
+	return maxArea
+}
+
+func maxAreaTwoPointers(heights []int) int {
+	maxArea := 0
+	l, r := 0, len(heights)-1
+	for l < r {
+		currentArea := min(heights[l], heights[r]) * (r - l)
+		if currentArea > maxArea {
+			maxArea = currentArea
+		}
+		if heights[l] > heights[r] {
+			r--
+		} else {
+			l++
 		}
 	}
 	return maxArea
