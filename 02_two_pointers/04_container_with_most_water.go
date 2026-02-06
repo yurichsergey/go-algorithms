@@ -63,7 +63,7 @@ Use the **two-pointer technique**:
 */
 
 /*
-*
+Complexity Analysis
 Time complexity: O(n2)
 Space complexity: O(1)
 n is the number of elements in the heights slice.
@@ -81,6 +81,12 @@ func maxAreaBruteForce(heights []int) int {
 	return maxArea
 }
 
+/*
+Complexity Analysis
+Time complexity: O(n)
+Space complexity: O(1)
+n is the number of elements in the heights array.
+*/
 func maxAreaTwoPointers(heights []int) int {
 	maxArea := 0
 	l, r := 0, len(heights)-1
