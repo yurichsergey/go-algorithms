@@ -31,12 +31,14 @@ const tpl = `
 </html>
 `
 
-func NewRequestHandler(s story.Story) http.Handler {
-	return RequestHandler{Story: s}
-}
-
 type RequestHandler struct {
 	Story story.Story
+	tmpl  *template.Template
+}
+
+func NewRequestHandler(s story.Story) http.Handler {
+	tmpl := template.Must(template.New("story").Parse(tpl))
+	return RequestHandler{Story: s, tmpl: tmpl}
 }
 
 func (h RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -50,8 +52,7 @@ func (h RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl := template.Must(template.New("story").Parse(tpl))
-	if err := tmpl.Execute(w, storyPart); err != nil {
+	if err := h.tmpl.Execute(w, storyPart); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
