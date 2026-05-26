@@ -31,7 +31,7 @@ func (h RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		storyHTML += `<p>` + paragraph + `</p>`
 	}
 
-	if len(storyPart.Story) > 0 {
+	if len(storyPart.Options) > 0 {
 		storyHTML += `<p>Continue<ul>`
 		for _, choice := range storyPart.Options {
 			storyHTML += `<li><a href="` + choice.Arc + `">` + choice.Text + `</a></li>`
