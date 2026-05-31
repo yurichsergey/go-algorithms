@@ -1,6 +1,7 @@
 package crawl
 
 import (
+	queue_lib "05_sitemap/queue"
 	"io"
 	"log"
 	"net/http"
@@ -20,19 +21,17 @@ func Crawl(startURL string, maxDepth int) []string {
 		log.Fatal(err)
 	}
 
-	queue := make([]queueItem, 0)
-	queue = append(queue, queueItem{url: startURL, depth: 0})
+	queue := queue_lib.Queue[queueItem]{}
+	queue.Enqueue(queueItem{url: startURL, depth: 0})
 
 	visited := make(map[string]struct{})
-	for len(queue) > 0 {
-		currentHref := queue[0].url
-		currentDepth := queue[0].depth
-		queue = queue[1:]
-		if _, ok := visited[currentHref]; ok || currentDepth > maxDepth {
+	for !queue.IsEmpty() {
+		current := queue.Dequeue()
+		if _, ok := visited[current.url]; ok || current.depth > maxDepth {
 			continue
 		}
-		queue = downloadAndAnalyzeURL(currentHref, parsedStartURL, queue, currentDepth)
-		visited[currentHref] = struct{}{}
+		downloadAndAnalyzeURL(current.url, parsedStartURL, &queue, current.depth)
+		visited[current.url] = struct{}{}
 	}
 
 	log.Printf("Visited URLs = %d\n", len(visited))
@@ -45,11 +44,11 @@ func Crawl(startURL string, maxDepth int) []string {
 	return visitedHrefs
 }
 
-func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue []queueItem, currentDepth int) []queueItem {
+func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue *queue_lib.Queue[queueItem], currentDepth int) {
 	currentLinks, errExtract := extractLinksFromUrl(currentHref)
 	if errExtract != nil {
 		log.Printf("Error extracting links from URL \"%s\": %s", currentHref, errExtract)
-		return queue
+		return
 	}
 	for _, currentLink := range currentLinks {
 		log.Printf("Processing URL \"%s\"\n", currentLink.Href)
@@ -62,9 +61,8 @@ func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue []
 		}
 		urlToAdd := parsedStartURL.ResolveReference(parsedCurrentURL).String()
 		log.Printf("Adding URL \"%s\" to the queue\n", urlToAdd)
-		queue = append(queue, queueItem{url: urlToAdd, depth: currentDepth + 1})
+		queue.Enqueue(queueItem{url: urlToAdd, depth: currentDepth + 1})
 	}
-	return queue
 }
 
 func extractLinksFromUrl(url string) ([]link.Link, error) {
