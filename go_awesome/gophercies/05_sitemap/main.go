@@ -11,13 +11,6 @@ import (
 	"link_parser/link"
 )
 
-type ParsedURL struct {
-	WholeURL string
-	Scheme   string
-	Host     string
-	Path     string
-}
-
 func main() {
 
 	urlAttr := flag.String("startURL", "", "URL to generate sitemap for")
@@ -34,8 +27,8 @@ func main() {
 	//fmt.
 }
 
-func crawl(startURL string) {
-	parsedStartURL, err := parseURL(startURL)
+func crawl(startURL string) []string {
+	parsedStartURL, err := url.Parse(startURL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,44 +51,39 @@ func crawl(startURL string) {
 	for visitedURL := range visited {
 		fmt.Println(visitedURL)
 	}
+
+	var visitedHrefs []string
+	for visitedURL := range visited {
+		visitedHrefs = append(visitedHrefs, visitedURL)
+	}
+	return visitedHrefs
 }
 
-func downloadAndAnalyzeURL(currentHref string, parsedStartURL *ParsedURL, queue []string) []string {
+func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue []string) []string {
 	currentLinks, errExtract := extractLinksFromUrl(currentHref)
 	if errExtract != nil {
-		log.Fatal(errExtract)
+		log.Printf("Error extracting links from URL \"%s\": %s", currentHref, errExtract)
+		return queue
 	}
 	for _, currentLink := range currentLinks {
 		fmt.Printf("Processing URL \"%s\"\n", currentLink.Href)
-		parsedCurrentURL, errParse := parseURL(currentLink.Href)
+		parsedCurrentURL, errParse := url.Parse(currentLink.Href)
 		if errParse != nil {
-			log.Fatal(errParse)
+			log.Printf("Error parsing URL \"%s\": %s", currentLink.Href, errParse)
 		}
 		if parsedCurrentURL.Host != parsedStartURL.Host && parsedCurrentURL.Host != "" {
 			continue
 		}
 		URLToAdd := normalizeURL(parsedStartURL, parsedCurrentURL)
+		//URLToAdd := parsedStartURL.ResolveReference(parsedCurrentURL).String()
 		fmt.Printf("Adding URL \"%s\" to the queue\n", URLToAdd)
 		queue = append(queue, URLToAdd)
 	}
 	return queue
 }
 
-func normalizeURL(baseURL *ParsedURL, customURL *ParsedURL) string {
-	return baseURL.Scheme + "://" + baseURL.Host + customURL.Path
-}
-
-func parseURL(inputURL string) (*ParsedURL, error) {
-	u, err := url.Parse(inputURL)
-	if err != nil {
-		return nil, err
-	}
-	return &ParsedURL{
-		WholeURL: inputURL,
-		Scheme:   u.Scheme,
-		Host:     u.Host,
-		Path:     u.Path,
-	}, nil
+func normalizeURL(baseURL *url.URL, customURL *url.URL) string {
+	return baseURL.ResolveReference(customURL).String()
 }
 
 func extractLinksFromUrl(url string) ([]link.Link, error) {
