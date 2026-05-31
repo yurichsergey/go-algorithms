@@ -1,7 +1,6 @@
 package crawl
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -30,11 +29,11 @@ func Crawl(startURL string) []string {
 		visited[currentHref] = struct{}{}
 	}
 
-	fmt.Printf("Visited URLs = %d\n", len(visited))
+	log.Printf("Visited URLs = %d\n", len(visited))
 
 	var visitedHrefs []string
 	for visitedURL := range visited {
-		fmt.Println(visitedURL)
+		log.Println(visitedURL)
 		visitedHrefs = append(visitedHrefs, visitedURL)
 	}
 	return visitedHrefs
@@ -47,7 +46,7 @@ func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue []
 		return queue
 	}
 	for _, currentLink := range currentLinks {
-		fmt.Printf("Processing URL \"%s\"\n", currentLink.Href)
+		log.Printf("Processing URL \"%s\"\n", currentLink.Href)
 		parsedCurrentURL, errParse := url.Parse(currentLink.Href)
 		if errParse != nil {
 			log.Printf("Error parsing URL \"%s\": %s", currentLink.Href, errParse)
@@ -56,7 +55,7 @@ func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue []
 			continue
 		}
 		urlToAdd := parsedStartURL.ResolveReference(parsedCurrentURL).String()
-		fmt.Printf("Adding URL \"%s\" to the queue\n", urlToAdd)
+		log.Printf("Adding URL \"%s\" to the queue\n", urlToAdd)
 		queue = append(queue, urlToAdd)
 	}
 	return queue
