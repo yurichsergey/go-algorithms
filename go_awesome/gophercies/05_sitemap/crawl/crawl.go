@@ -9,23 +9,29 @@ import (
 	"link_parser/link"
 )
 
-func Crawl(startURL string) []string {
+type queueItem struct {
+	url   string
+	depth int
+}
+
+func Crawl(startURL string, maxDepth int) []string {
 	parsedStartURL, err := url.Parse(startURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	queue := make([]string, 0)
-	queue = append(queue, startURL)
+	queue := make([]queueItem, 0)
+	queue = append(queue, queueItem{url: startURL, depth: 0})
 
 	visited := make(map[string]struct{})
 	for len(queue) > 0 {
-		currentHref := queue[0]
+		currentHref := queue[0].url
+		currentDepth := queue[0].depth
 		queue = queue[1:]
-		if _, ok := visited[currentHref]; ok {
+		if _, ok := visited[currentHref]; ok || currentDepth > maxDepth {
 			continue
 		}
-		queue = downloadAndAnalyzeURL(currentHref, parsedStartURL, queue)
+		queue = downloadAndAnalyzeURL(currentHref, parsedStartURL, queue, currentDepth)
 		visited[currentHref] = struct{}{}
 	}
 
@@ -39,7 +45,7 @@ func Crawl(startURL string) []string {
 	return visitedHrefs
 }
 
-func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue []string) []string {
+func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue []queueItem, currentDepth int) []queueItem {
 	currentLinks, errExtract := extractLinksFromUrl(currentHref)
 	if errExtract != nil {
 		log.Printf("Error extracting links from URL \"%s\": %s", currentHref, errExtract)
@@ -56,7 +62,7 @@ func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue []
 		}
 		urlToAdd := parsedStartURL.ResolveReference(parsedCurrentURL).String()
 		log.Printf("Adding URL \"%s\" to the queue\n", urlToAdd)
-		queue = append(queue, urlToAdd)
+		queue = append(queue, queueItem{url: urlToAdd, depth: currentDepth + 1})
 	}
 	return queue
 }
