@@ -31,12 +31,10 @@ func Crawl(startURL string) []string {
 	}
 
 	fmt.Printf("Visited URLs = %d\n", len(visited))
-	for visitedURL := range visited {
-		fmt.Println(visitedURL)
-	}
 
 	var visitedHrefs []string
 	for visitedURL := range visited {
+		fmt.Println(visitedURL)
 		visitedHrefs = append(visitedHrefs, visitedURL)
 	}
 	return visitedHrefs
@@ -57,16 +55,11 @@ func downloadAndAnalyzeURL(currentHref string, parsedStartURL *url.URL, queue []
 		if parsedCurrentURL.Host != parsedStartURL.Host && parsedCurrentURL.Host != "" {
 			continue
 		}
-		URLToAdd := normalizeURL(parsedStartURL, parsedCurrentURL)
-		//URLToAdd := parsedStartURL.ResolveReference(parsedCurrentURL).String()
-		fmt.Printf("Adding URL \"%s\" to the queue\n", URLToAdd)
-		queue = append(queue, URLToAdd)
+		urlToAdd := parsedStartURL.ResolveReference(parsedCurrentURL).String()
+		fmt.Printf("Adding URL \"%s\" to the queue\n", urlToAdd)
+		queue = append(queue, urlToAdd)
 	}
 	return queue
-}
-
-func normalizeURL(baseURL *url.URL, customURL *url.URL) string {
-	return baseURL.ResolveReference(customURL).String()
 }
 
 func extractLinksFromUrl(url string) ([]link.Link, error) {
