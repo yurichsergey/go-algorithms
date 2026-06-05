@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"07_cli_task_manager/db"
 	"fmt"
 	"strings"
 
@@ -12,7 +13,12 @@ var addCmd = &cobra.Command{
 	Short: "Add a task to a task list",
 	Run: func(cmd *cobra.Command, args []string) {
 		task := strings.Join(args, " ")
-		fmt.Printf("Adding task %s\n", task)
+		err := db.AddTask(task)
+		if err != nil {
+			fmt.Printf("Error adding task %s: %v\n", task, err)
+			return
+		}
+		fmt.Printf("Task added: %s\n", task)
 	},
 }
 
