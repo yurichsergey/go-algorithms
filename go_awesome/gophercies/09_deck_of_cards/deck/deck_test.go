@@ -19,37 +19,84 @@ func TestNew(t *testing.T) {
 }
 
 func TestWithShuffle(t *testing.T) {
-	// TODO: build an unshuffled deck (New()) and a shuffled one
-	// (New(WithShuffle())). Assert they're the same length, then
-	// assert they contain the same multiset of cards by sorting
-	// both with WithSort(DefaultLess) and comparing.
-	// Hint: reflect.DeepEqual works on slices of comparable structs.
+	unshuffled := New(WithSort(DefaultLess))
+	shuffled := New(WithShuffle(), WithSort(DefaultLess))
+	if len(unshuffled) != len(shuffled) {
+		t.Fatalf("length mismatch: %d vs %d", len(unshuffled), len(shuffled))
+	}
+	for i := range unshuffled {
+		if unshuffled[i] != shuffled[i] {
+			t.Errorf("card mismatch at %d: %v vs %v", i, unshuffled[i], shuffled[i])
+		}
+	}
 }
 
 func TestWithFilter(t *testing.T) {
-	// TODO: build a deck filtering out Two and Three, then assert
-	// no card in the result has Value == Two or Value == Three,
-	// and that the length is 52 minus the number removed (4 suits
-	// x 2 values = 8).
+	cards := New(WithFilter(func(c Card) bool {
+		return c.Value != Two && c.Value != Three
+	}))
+	if len(cards) != 44 {
+		t.Errorf("expected 44 cards, got %d", len(cards))
+	}
+	for _, c := range cards {
+		if c.Value == Two || c.Value == Three {
+			t.Errorf("found filtered card: %v", c)
+		}
+	}
 }
 
 func TestWithSortDefaultLess(t *testing.T) {
-	// TODO: build a shuffled-then-sorted deck
-	// (New(WithShuffle(), WithSort(DefaultLess))) and assert it's
-	// deeply equal to a plain New() deck.
+	sorted := New(WithShuffle(), WithSort(DefaultLess))
+	expected := New()
+	if len(sorted) != len(expected) {
+		t.Fatalf("length mismatch: %d vs %d", len(sorted), len(expected))
+	}
+	for i := range expected {
+		if sorted[i] != expected[i] {
+			t.Errorf("card mismatch at %d: got %v, want %v", i, sorted[i], expected[i])
+		}
+	}
 }
 
 func TestWithJokers(t *testing.T) {
-	// TODO: build a deck with New(WithJokers(3)), assert the total
-	// length is 52+3, and that exactly 3 cards have Suit == Joker.
+	cards := New(WithJokers(3))
+	if len(cards) != 55 {
+		t.Errorf("expected 55 cards, got %d", len(cards))
+	}
+	jokers := 0
+	for _, c := range cards {
+		if c.Suit == Joker {
+			jokers++
+		}
+	}
+	if jokers != 3 {
+		t.Errorf("expected 3 jokers, got %d", jokers)
+	}
 }
 
 func TestWithMultipleDecks(t *testing.T) {
-	// TODO: table-driven test over n = 1, 2, 3, 5, asserting
-	// len(New(WithMultipleDecks(n))) == n*52 for each.
+	cases := []int{1, 2, 3, 5}
+	for _, n := range cases {
+		cards := New(WithMultipleDecks(n))
+		if len(cards) != n*52 {
+			t.Errorf("WithMultipleDecks(%d): expected %d cards, got %d", n, n*52, len(cards))
+		}
+	}
 }
 
 func TestCardString(t *testing.T) {
-	// TODO: table-driven test with a few Card values (including
-	// one with Suit: Joker) mapped to their expected String() output.
+	cases := []struct {
+		card     Card
+		expected string
+	}{
+		{Card{Suit: Spades, Value: Ace}, "Ace of Spades"},
+		{Card{Suit: Hearts, Value: King}, "King of Hearts"},
+		{Card{Suit: Diamonds, Value: Ten}, "Ten of Diamonds"},
+		{Card{Suit: Joker, Value: JokerRank}, "Joker"},
+	}
+	for _, tc := range cases {
+		if got := tc.card.String(); got != tc.expected {
+			t.Errorf("Card(%v).String() = %q, want %q", tc.card, got, tc.expected)
+		}
+	}
 }
