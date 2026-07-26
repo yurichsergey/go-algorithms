@@ -24,24 +24,21 @@ func main() {
 			continue
 		}
 
-		if len(cards) < 10 {
+		if len(cards) < 20 {
 			cards = deck.New(deck.WithShuffle())
 		}
 
 		result, remaining := playRound(cards, strategy)
 		cards = remaining
-
-		switch result {
-		case Win:
-			balance += bet
-		case Lose:
-			balance -= bet
-		}
+		balance = applyResult(balance, bet, result)
 
 		fmt.Printf("Balance: $%d\n", balance)
 		fmt.Print("Play again? (y/n): ")
 		var again string
-		fmt.Scan(&again)
+		_, err2 := fmt.Scan(&again)
+		if err2 != nil {
+			return
+		}
 		if again != "y" {
 			break
 		}

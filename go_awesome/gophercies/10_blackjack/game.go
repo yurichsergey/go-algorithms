@@ -13,6 +13,17 @@ const (
 	Tie
 )
 
+func applyResult(balance, bet int, result Result) int {
+	switch result {
+	case Win:
+		return balance + bet
+	case Lose:
+		return balance - bet
+	default:
+		return balance
+	}
+}
+
 func playRound(cards []deck.Card, strategy PlayerStrategy) (Result, []deck.Card) {
 	var player, dealer Hand
 	player = append(player, cards[1], cards[3])
@@ -23,15 +34,12 @@ func playRound(cards []deck.Card, strategy PlayerStrategy) (Result, []deck.Card)
 
 	switch {
 	case isBlackjack(player) && isBlackjack(dealer):
-		printStat(player, dealer)
 		fmt.Println("Both have blackjack! It's a tie.")
 		result = Tie
 	case isBlackjack(player):
-		printStat(player, dealer)
 		fmt.Println("Blackjack! You win!")
 		result = Win
 	case isBlackjack(dealer):
-		printStat(player, dealer)
 		fmt.Println("Dealer has blackjack! Dealer wins.")
 		result = Lose
 	default:
@@ -44,8 +52,7 @@ func playRound(cards []deck.Card, strategy PlayerStrategy) (Result, []deck.Card)
 func playTurns(player, dealer Hand, cards []deck.Card, strategy PlayerStrategy) (Result, []deck.Card) {
 	var result Result
 
-	busted := false
-	for Score(player) <= 21 && !busted {
+	for Score(player) < 21 {
 		fmt.Printf("Player: %s (score %d)\n", player, Score(player))
 		fmt.Printf("Dealer: %s [hidden]\n", dealer[0])
 		if !strategy(player, dealer[0]) {
@@ -53,19 +60,18 @@ func playTurns(player, dealer Hand, cards []deck.Card, strategy PlayerStrategy) 
 		}
 		player = append(player, cards[0])
 		cards = cards[1:]
-		if Score(player) > 21 {
-			busted = true
-		}
 	}
 
-	if busted {
+	if Score(player) > 21 {
+		fmt.Printf("Player: %s (score %d)\n", player, Score(player))
 		fmt.Println("You busted! Dealer wins")
-		printStat(player, dealer)
 		result = Lose
 	} else {
-		for Score(dealer) <= 16 || isSoft17(dealer) {
+		dealerScore := Score(dealer)
+		for dealerScore <= 16 || isSoft17(dealer) {
 			dealer = append(dealer, cards[0])
 			cards = cards[1:]
+			dealerScore = Score(dealer)
 		}
 		printStat(player, dealer)
 		playerScore, dealerScore := Score(player), Score(dealer)

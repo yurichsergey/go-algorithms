@@ -51,16 +51,23 @@ func isBlackjack(h Hand) bool {
 	return len(h) == 2 && Score(h) == 21
 }
 
+// isSoft17 returns true only when the hand scores 17 with an Ace counted as 11.
+// A hand like Ace+Six+Ten scores 17 but the Ace is demoted to 1 — that is a hard 17.
 func isSoft17(h Hand) bool {
 	if Score(h) != 17 {
 		return false
 	}
+	// Compute score treating every Ace as 1 (hard score).
+	// If it equals 17 the Ace is already demoted — hard 17, not soft.
+	hard := 0
 	for _, c := range h {
 		if c.Value == deck.Ace {
-			return true
+			hard++
+		} else {
+			hard += scores[c.Value]
 		}
 	}
-	return false
+	return hard != 17
 }
 
 func printStat(player Hand, dealer Hand) {
