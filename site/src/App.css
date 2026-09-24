@@ -1,0 +1,101 @@
+.page {
+  padding: 32px 0 64px;
+  text-align: left;
+}
+
+.breadcrumb {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.breadcrumb:hover {
+  text-decoration: underline;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.category-card {
+  display: block;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.category-card:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
+}
+
+.category-card p {
+  color: var(--text);
+  margin-top: 4px;
+}
+
+.problem-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.problem-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.problem-list a {
+  flex: 1;
+  color: var(--text-h);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.problem-list a:hover {
+  color: var(--accent);
+}
+
+.difficulty {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.difficulty[data-level='Easy'] {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+.difficulty[data-level='Medium'] {
+  background: rgba(245, 165, 36, 0.15);
+  color: #f5a524;
+}
+
+.difficulty[data-level='Hard'] {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+}
+
+.badge-soon {
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.6;
+}

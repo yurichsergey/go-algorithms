@@ -1,0 +1,145 @@
+.visualizer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.visualizer-goal {
+  margin: 0;
+  color: var(--text-muted, #666);
+}
+
+.visualizer-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.visualizer-controls button {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 6px;
+  background: #4f8cff;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.visualizer-controls button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.visualizer-controls button:last-child {
+  background: #e2e5eb;
+  color: #333;
+}
+
+/* row of cells (arrays / hashmap-style scanning) */
+.visualizer-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.visualizer-cell {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #eef1f6;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.visualizer-cell[data-active='true'] {
+  background: #ffe1a8;
+  box-shadow: 0 0 0 2px #f5a524;
+}
+
+.visualizer-cell[data-matched='true'] {
+  background: #b7f5c1;
+  box-shadow: 0 0 0 2px #2ecc71;
+}
+
+.visualizer-cell-index {
+  position: absolute;
+  top: -1.1rem;
+  font-size: 0.7rem;
+  color: #888;
+  font-weight: 400;
+}
+
+/* bar chart (sorting / two pointers) */
+.visualizer-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  height: 200px;
+  padding: 0 0.5rem;
+}
+
+.visualizer-bar {
+  flex: 1;
+  min-width: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.25rem;
+  border-radius: 4px 4px 0 0;
+  background: #4f8cff;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.visualizer-bar[data-pointer='true'] {
+  background: #f5a524;
+}
+
+/* side panels */
+.visualizer-panel {
+  border-top: 1px solid #e2e5eb;
+  padding-top: 1rem;
+}
+
+.visualizer-panel h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.visualizer-panel-row {
+  display: flex;
+  gap: 2rem;
+}
+
+.visualizer-hashmap {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  min-height: 2.5rem;
+}
+
+.visualizer-chip {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: #eef1f6;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.visualizer-result {
+  font-weight: 600;
+  color: #2ecc71;
+}
+
+.visualizer-placeholder {
+  padding: 2rem;
+  text-align: center;
+  border: 2px dashed #e2e5eb;
+  border-radius: 8px;
+  color: #888;
+}
