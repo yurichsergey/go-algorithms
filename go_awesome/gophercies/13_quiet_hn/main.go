@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"13_quiet_hn/hn"
@@ -37,20 +39,34 @@ func handler(numStories int, tpl *template.Template) http.HandlerFunc {
 			http.Error(w, "Failed to load top stories", http.StatusInternalServerError)
 			return
 		}
+		numToFetch := int(math.Ceil(float64(numStories) * 1.25))
+		ids = ids[:numToFetch]
+
+		results := make([]item, len(ids))
+
+		var wg sync.WaitGroup
+		for i, id := range ids {
+			wg.Add(1)
+			go func(i, id int) {
+				defer wg.Done()
+				hnItem, err := client.GetItem(id)
+				if err == nil {
+					results[i] = parseHNItem(hnItem)
+				}
+			}(i, id)
+		}
+		wg.Wait()
+
 		var stories []item
-		for _, id := range ids {
-			hnItem, err := client.GetItem(id)
-			if err != nil {
-				continue
-			}
-			item := parseHNItem(hnItem)
-			if isStoryLink(item) {
-				stories = append(stories, item)
+		for _, it := range results {
+			if isStoryLink(it) {
+				stories = append(stories, it)
 				if len(stories) >= numStories {
 					break
 				}
 			}
 		}
+
 		data := templateData{
 			Stories: stories,
 			Time:    time.Now().Sub(start),
