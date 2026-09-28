@@ -6,7 +6,6 @@ import (
 	"math"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -21,6 +20,15 @@ type TemplateData struct {
 	Time    time.Duration
 }
 
+type result struct {
+	idx  int
+	Item Item
+}
+type job struct {
+	idx int
+	id  int
+}
+
 func GetStories(numStories int) ([]Item, error) {
 	var client hn.Client
 	ids, err := client.TopItems()
@@ -30,23 +38,33 @@ func GetStories(numStories int) ([]Item, error) {
 	numToFetch := int(math.Ceil(float64(numStories) * 1.25))
 	ids = ids[:numToFetch]
 
-	results := make([]Item, len(ids))
+	jobs := make(chan job, len(ids))       // this buffered pipe is empty now, holds up to len(ids)
+	results := make(chan result, len(ids)) // this buffered pipe is empty now, holds up to len(ids)
 
-	var wg sync.WaitGroup
-	for i, id := range ids {
-		wg.Add(1)
-		go func(i, id int) {
-			defer wg.Done()
-			hnItem, err := client.GetItem(id)
-			if err == nil {
-				results[i] = parseHNItem(hnItem)
+	for w := 0; w < 5; w++ {
+		go func() {
+			for job := range jobs { // worker pulls jobs from the pipe until a channel is empty+closed
+				hnItem, err := client.GetItem(job.id)
+				if err == nil {
+					results <- result{job.idx, parseHNItem(hnItem)} // pushes a result into the result pipe
+				}
 			}
-		}(i, id)
+		}()
 	}
-	wg.Wait()
+
+	for i, id := range ids {
+		jobs <- job{i, id} // pushes a job into the jobs pipe after initializing goroutines
+	}
+	close(jobs) // closing the jobs pipe, after filling, but before it will be closed
+
+	items := make([]Item, len(ids))
+	for i := 0; i < len(ids); i++ {
+		r := <-results // pull the one result out - blocks until one is ready
+		items[r.idx] = r.Item
+	}
 
 	var stories []Item
-	for _, it := range results {
+	for _, it := range items {
 		if isStoryLink(it) {
 			stories = append(stories, it)
 			if len(stories) >= numStories {
