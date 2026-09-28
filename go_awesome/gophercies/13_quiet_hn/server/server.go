@@ -10,10 +10,11 @@ import (
 
 func Handler(numStories int, tpl *template.Template) http.HandlerFunc {
 	cached := cache.Cache{}
+	cached.Start(numStories)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		//stories, err := reader.GetStories(numStories)
+
 		stories, err := cached.GetStories(numStories)
 		if err != nil {
 			http.Error(w, "Failed to load top stories", http.StatusInternalServerError)
