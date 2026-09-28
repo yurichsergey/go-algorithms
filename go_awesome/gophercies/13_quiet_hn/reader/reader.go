@@ -22,7 +22,7 @@ type TemplateData struct {
 
 type result struct {
 	idx  int
-	Item Item
+	item Item
 }
 type job struct {
 	idx int
@@ -60,7 +60,7 @@ func GetStories(numStories int) ([]Item, error) {
 	items := make([]Item, len(ids))
 	for i := 0; i < len(ids); i++ {
 		r := <-results // pull the one result out - blocks until one is ready
-		items[r.idx] = r.Item
+		items[r.idx] = r.item
 	}
 
 	var stories []Item
