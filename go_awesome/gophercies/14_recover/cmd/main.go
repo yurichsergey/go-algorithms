@@ -1,6 +1,7 @@
 package main
 
 import (
+	"14_recover/middleware"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,7 +12,7 @@ func main() {
 	mux.HandleFunc("/panic/", panicDemo)
 	mux.HandleFunc("/panic-after/", panicAfterDemo)
 	mux.HandleFunc("/", hello)
-	log.Fatal(http.ListenAndServe(":3000", mux))
+	log.Fatal(http.ListenAndServe(":3000", middleware.Recover(mux)))
 }
 
 func panicDemo(w http.ResponseWriter, r *http.Request) {
