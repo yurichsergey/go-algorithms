@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 	"runtime/debug"
@@ -21,12 +22,21 @@ func (bw *bufferedWriter) Write(b []byte) (int, error) {
 	return bw.body.Write(b)
 }
 
-func Recover(next http.Handler) http.Handler {
+func Recover(next http.Handler, dev bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bw := &bufferedWriter{ResponseWriter: w}
 		defer func() {
 			if err := recover(); err != nil {
-				log.Printf("panic: %v\n%s", err, debug.Stack())
+				stack := debug.Stack()
+				log.Printf("panic: %v\n%s", err, stack)
+				if dev {
+					http.Error(
+						w,
+						fmt.Sprintf("Something went wrong:\n%v\n\n%s", err, stack),
+						http.StatusInternalServerError,
+					)
+					return
+				}
 				http.Error(w, "Something went wrong", http.StatusInternalServerError)
 			}
 		}()

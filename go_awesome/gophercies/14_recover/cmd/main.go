@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -12,7 +13,8 @@ func main() {
 	mux.HandleFunc("/panic/", panicDemo)
 	mux.HandleFunc("/panic-after/", panicAfterDemo)
 	mux.HandleFunc("/", hello)
-	log.Fatal(http.ListenAndServe(":3000", middleware.Recover(mux)))
+	dev := os.Getenv("APP_ENV") == "development"
+	log.Fatal(http.ListenAndServe(":3000", middleware.Recover(mux, dev)))
 }
 
 func panicDemo(w http.ResponseWriter, r *http.Request) {
