@@ -14,18 +14,18 @@ type bufferedWriter struct {
 	http.ResponseWriter // embedded real writer
 	status              int
 	body                bytes.Buffer
-	commited            bool
+	committed           bool
 }
 
 func (bw *bufferedWriter) WriteHeader(status int) {
-	if bw.commited {
+	if bw.committed {
 		return
 	}
 	bw.status = status
 }
 
 func (bw *bufferedWriter) Write(b []byte) (int, error) {
-	if bw.commited {
+	if bw.committed {
 		return bw.ResponseWriter.Write(b)
 	}
 	return bw.body.Write(b)
@@ -36,24 +36,30 @@ func (bw *bufferedWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	if !ok {
 		return nil, nil, http.ErrNotSupported
 	}
-	return h.Hijack()
+	conn, rw, err := h.Hijack()
+	if err == nil {
+		bw.committed = true
+	}
+	return conn, rw, err
 }
 
 func (bw *bufferedWriter) Flush() {
-	if !bw.commited {
-		if bw.status != 0 {
-			bw.ResponseWriter.WriteHeader(bw.status)
-		}
-		_, err := bw.ResponseWriter.Write(bw.body.Bytes())
-		if err != nil {
-			return
-		}
-		bw.body.Reset()
-		bw.commited = true
-	}
+	bw.commit()
 	if f, ok := bw.ResponseWriter.(http.Flusher); ok {
 		f.Flush()
 	}
+}
+
+func (bw *bufferedWriter) commit() {
+	if bw.committed {
+		return
+	}
+	if bw.status != 0 {
+		bw.ResponseWriter.WriteHeader(bw.status)
+	}
+	_, _ = bw.ResponseWriter.Write(bw.body.Bytes())
+	bw.body.Reset()
+	bw.committed = true
 }
 
 var _ http.Flusher = (*bufferedWriter)(nil)
@@ -67,7 +73,7 @@ func Recover(next http.Handler, dev bool) http.Handler {
 			if err := recover(); err != nil {
 				stack := debug.Stack()
 				log.Printf("panic: %v\n%s", err, stack)
-				if bw.commited {
+				if bw.committed {
 					return
 				}
 				if dev {
@@ -84,15 +90,6 @@ func Recover(next http.Handler, dev bool) http.Handler {
 
 		next.ServeHTTP(bw, r)
 
-		if bw.commited {
-			return
-		}
-		if bw.status != 0 {
-			w.WriteHeader(bw.status)
-		}
-		_, err := w.Write(bw.body.Bytes())
-		if err != nil {
-			return
-		}
+		bw.commit()
 	})
 }
