@@ -18,10 +18,16 @@ type bufferedWriter struct {
 }
 
 func (bw *bufferedWriter) WriteHeader(status int) {
+	if bw.commited {
+		return
+	}
 	bw.status = status
 }
 
 func (bw *bufferedWriter) Write(b []byte) (int, error) {
+	if bw.commited {
+		return bw.ResponseWriter.Write(b)
+	}
 	return bw.body.Write(b)
 }
 
@@ -61,6 +67,9 @@ func Recover(next http.Handler, dev bool) http.Handler {
 			if err := recover(); err != nil {
 				stack := debug.Stack()
 				log.Printf("panic: %v\n%s", err, stack)
+				if bw.commited {
+					return
+				}
 				if dev {
 					http.Error(
 						w,
@@ -75,6 +84,9 @@ func Recover(next http.Handler, dev bool) http.Handler {
 
 		next.ServeHTTP(bw, r)
 
+		if bw.commited {
+			return
+		}
 		if bw.status != 0 {
 			w.WriteHeader(bw.status)
 		}
