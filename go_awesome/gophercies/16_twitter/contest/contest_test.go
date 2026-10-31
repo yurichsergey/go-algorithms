@@ -90,7 +90,7 @@ func TestPick(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:	"pick zero users",
+			name:    "pick zero users",
 			users:   []string{"alice", "bob"},
 			n:       0,
 			wantLen: 0,
@@ -107,6 +107,7 @@ func TestPick(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			original := slices.Clone(tt.users)
 			got, err := Pick(tt.users, tt.n)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Pick() error = %v, wantErr %v", err, tt.wantErr)
@@ -114,6 +115,29 @@ func TestPick(t *testing.T) {
 			}
 			if len(got) != tt.wantLen {
 				t.Errorf("Pick() got length = %v, want length %v", len(got), tt.wantLen)
+			}
+			if tt.wantErr {
+				return
+			}
+
+			allowed := make(map[string]struct{}, len(tt.users))
+			for _, user := range tt.users {
+				allowed[user] = struct{}{}
+			}
+
+			seen := make(map[string]struct{}, len(got))
+			for _, winner := range got {
+				if _, ok := allowed[winner]; !ok {
+					t.Errorf("Pick() returned %q, which wasn't in the input", winner)
+				}
+				if _, ok := seen[winner]; ok {
+					t.Errorf("Pick() returned duplicate winner %q", winner)
+				}
+				seen[winner] = struct{}{}
+			}
+
+			if !slices.Equal(tt.users, original) {
+				t.Errorf("Pick() modified input: got %v, want %v", tt.users, original)
 			}
 		})
 	}
