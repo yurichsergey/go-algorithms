@@ -1,6 +1,8 @@
 package contest
 
 import (
+	"errors"
+	rand "math/rand/v2"
 	"sort"
 	"strings"
 )
@@ -23,4 +25,16 @@ func Merge(oldUsers, newUsers []string) []string {
 	}
 	sort.Strings(merged)
 	return merged
+}
+
+func Pick(users []string, n int) ([]string, error) {
+	if n <= 0 || n > len(users) {
+		return nil, errors.New("invalid number of users to pick")
+	}
+	result := make([]string, len(users))
+	copy(result, users)
+	rand.Shuffle(len(result), func(i, j int) {
+		result[i], result[j] = result[j], result[i]
+	})
+	return result[:n], nil
 }
