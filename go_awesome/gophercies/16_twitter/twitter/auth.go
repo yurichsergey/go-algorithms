@@ -62,5 +62,9 @@ func appOnlyToken(
 		return "", errors.New("unexpected token type: " + token.TokenType)
 	}
 
+	if token.AccessToken == "" {
+		return "", errors.New("access token is empty")
+	}
+
 	return token.AccessToken, nil
 }
