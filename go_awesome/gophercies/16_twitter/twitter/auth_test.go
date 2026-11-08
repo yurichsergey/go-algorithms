@@ -25,6 +25,20 @@ func TestAuth(t *testing.T) {
 			wantErr:   false,
 		},
 		{
+			name:      "failed token retrieval (empty token)",
+			status:    http.StatusOK,
+			body:      `{"token_type":"bearer","access_token":""}`,
+			wantToken: "",
+			wantErr:   true,
+		},
+		{
+			name:      "failed token retrieval (broken json)",
+			status:    http.StatusOK,
+			body:      `{"token_type":"bearer","access_token":"test-token"`,
+			wantToken: "",
+			wantErr:   true,
+		},
+		{
 			name:      "unexpected status code",
 			status:    http.StatusBadRequest,
 			body:      `{"error":"invalid_request"}`,
