@@ -92,7 +92,7 @@ func TestAuth(t *testing.T) {
 				t.Fatalf("appOnlyToken() expected error but got none")
 			}
 			if got != tt.wantToken {
-				t.Errorf("appOnlyToken() got = %v, want %v", got, "test-token")
+				t.Errorf("appOnlyToken() got = %v, want %v", got, tt.wantToken)
 			}
 		})
 	}
