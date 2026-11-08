@@ -29,6 +29,10 @@ func Save(path string, users []string) error {
 		return err
 	}
 
-	err = os.WriteFile(path, buf, 0644)
-	return err
+	tempPath := path + ".tmp"
+	if err := os.WriteFile(tempPath, buf, 0644); err != nil {
+		return err
+	}
+
+	return os.Rename(tempPath, path)
 }
