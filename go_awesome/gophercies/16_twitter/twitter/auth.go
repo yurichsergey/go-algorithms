@@ -3,8 +3,11 @@ package twitter
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 func appOnlyToken(
@@ -20,5 +23,44 @@ func appOnlyToken(
 
 	credentials := url.QueryEscape(key) + ":" + url.QueryEscape(secret)
 	encoded := base64.StdEncoding.EncodeToString([]byte(credentials))
-	return "", nil
+
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		tokenURL,
+		strings.NewReader(form.Encode()),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Set("Authorization", "Basic "+encoded)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return "", errors.New("unexpected status code: " + resp.Status)
+	}
+
+	var token struct {
+		TokenType   string `json:"token_type"`
+		AccessToken string `json:"access_token"`
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&token)
+	if err != nil {
+		return "", err
+	}
+
+	if token.TokenType != "bearer" {
+		return "", errors.New("unexpected token type: " + token.TokenType)
+	}
+
+	return token.AccessToken, nil
 }
