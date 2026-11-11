@@ -81,7 +81,10 @@ func TestAuth(t *testing.T) {
 					t.Errorf("Expected base64 decoded token to be 'test-key:test-secret', got %s", string(base64Decoded))
 				}
 
-				r.ParseForm()
+				err = r.ParseForm()
+				if err != nil {
+					t.Errorf("Failed to parse form: %v", err)
+				}
 				if r.Form.Get("grant_type") != "client_credentials" {
 					t.Errorf("Expected grant_type to be client_credentials, got %s", r.Form.Get("grant_type"))
 				}

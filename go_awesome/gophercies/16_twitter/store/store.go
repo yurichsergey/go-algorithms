@@ -22,7 +22,6 @@ func Load(path string) ([]string, error) {
 	return data, nil
 }
 
-
 func Save(path string, users []string) error {
 	buf, err := json.Marshal(users)
 	if err != nil {

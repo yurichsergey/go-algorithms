@@ -1,27 +1,57 @@
 package twitter
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 )
 
 func TestRetweets(t *testing.T) {
-	tests := []struct{
-		name string
-		status int
-		body string
-		want []string
-		wantErr bool
+	tests := []struct {
+		name            string
+		status          int
+		body            string
+		want            []string
+		wantErr         bool
+		wantErrContains string
 	}{
 		{
-			name: "test successful retweeters retrieval",
-			status: http.StatusOK,
-			body: `{"data":[{"username":"user1"},{"username":"user2"}]}`,
-			want: []string{"user1", "user2"},
+			name:    "test successful retweeters retrieval",
+			status:  http.StatusOK,
+			body:    `{"data":[{"username":"user1"},{"username":"user2"}]}`,
+			want:    []string{"user1", "user2"},
 			wantErr: false,
+		},
+		{
+			name:    "empty list",
+			status:  http.StatusOK,
+			body:    `{}`,
+			want:    []string{},
+			wantErr: false,
+		},
+		{
+			name:    "malformed json",
+			status:  http.StatusOK,
+			body:    `{"data": [`,
+			wantErr: true,
+		},
+		{
+			name:            "unauthorized",
+			status:          http.StatusUnauthorized,
+			body:            `{"title":"Unauthorized"}`,
+			wantErr:         true,
+			wantErrContains: `"title":"Unauthorized"`,
+		},
+		{
+			name:            "too many requests",
+			status:          http.StatusTooManyRequests,
+			body:            `{"title":"Too Many Requests"}`,
+			wantErr:         true,
+			wantErrContains: `"title":"Too Many Requests"`,
 		},
 	}
 
@@ -55,21 +85,22 @@ func TestRetweets(t *testing.T) {
 			}))
 			defer server.Close()
 
-			got, err := appOnlyToken(
-				context.Background(),
-				server.Client(),
-				server.URL+"/oauth2/token",
-				"test-key",
-				"test-secret",
-			)
+			client := NewClient(server.Client(), server.URL, "test-token")
+			got, err := client.Retweeters(context.Background(), "123456")
 			if tt.wantErr == false && err != nil {
-				t.Fatalf("appOnlyToken() error = %v", err)
+				t.Fatalf("client.Retweeters() error = %v", err)
 			}
 			if tt.wantErr == true && err == nil {
-				t.Fatalf("appOnlyToken() expected error but got none")
+				t.Fatalf("client.Retweeters() expected error but got none")
 			}
-			if got != tt.wantToken {
-				t.Errorf("appOnlyToken() got = %v, want %v", got, tt.wantToken)
+			if tt.wantErrContains != "" && !strings.Contains(err.Error(), tt.wantErrContains) {
+				t.Errorf("client.Retweeters() error = %q, want it to contain %q", err, tt.wantErrContains)
+			}
+			if tt.wantErr {
+				return
+			}
+			if slices.Equal(got, tt.want) == false {
+				t.Errorf("client.Retweeters() got = %v, want %v", got, tt.want)
 			}
 
 		})

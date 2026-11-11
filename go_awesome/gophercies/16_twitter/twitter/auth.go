@@ -5,6 +5,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -42,7 +44,12 @@ func appOnlyToken(
 		return "", err
 	}
 
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Printf("error during closing response body from %s; err: %v", req.URL, err)
+		}
+	}(resp.Body)
 
 	if resp.StatusCode != 200 {
 		return "", errors.New("unexpected status code: " + resp.Status)
