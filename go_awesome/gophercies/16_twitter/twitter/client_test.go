@@ -106,3 +106,29 @@ func TestRetweets(t *testing.T) {
 		})
 	}
 }
+
+func TestRetweetersPagination(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Query().Get("pagination_token") {
+		case "":
+			_, _ = w.Write([]byte(`{"data":[{"username":"user1"}],"meta":{"next_token":"page-2"}}`))
+		case "page-2":
+			_, _ = w.Write([]byte(`{"data":[{"username":"user2"}]}`))
+		default:
+			t.Errorf("unexpected pagination_token: %q", r.URL.Query().Get("pagination_token"))
+		}
+	}))	
+	defer server.Close()
+
+	client := NewClient(server.Client(), server.URL, "test-token")
+	got, err := client.Retweeters(context.Background(), "123456")
+	if err != nil {
+		t.Fatalf("client.Retweeters() error = %v", err)
+	}
+	want := []string{"user1", "user2"}
+	if !slices.Equal(got, want) {
+		t.Fatalf("result of Retweeters() is not equal wanted. got = %v, want = %v", got, want)
+	}
+
+
+}
