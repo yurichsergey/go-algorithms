@@ -26,6 +26,10 @@ func main() {
 		fmt.Fprintln(os.Stderr, "error: tweet ID is required")
 		os.Exit(1)
 	}
+	if pickCount < 0 {
+		fmt.Fprintln(os.Stderr, "error: pick count cannot be negative")
+		os.Exit(1)
+	}
 
 	fmt.Printf("tweet=%s, file=%s, pick=%d\n", tweetID, filePath, pickCount)
 
