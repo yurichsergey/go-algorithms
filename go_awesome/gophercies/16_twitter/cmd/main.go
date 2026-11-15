@@ -59,4 +59,16 @@ func main() {
 	}
 
 	fmt.Printf("Saved %d retweeters to file: %s\n", len(usernamesNew), filePath)
+
+	if pickCount > 0 {
+		winners, err := contest.Pick(usernamesNew, pickCount)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error picking winners: %v\n", err)
+			os.Exit(5)
+		}
+		fmt.Printf("Picked %d winners:\n", len(winners))
+		for _, winner := range winners {
+			fmt.Println(winner)
+		}
+	}
 }
