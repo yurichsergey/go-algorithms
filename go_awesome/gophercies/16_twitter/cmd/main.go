@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/yurichsergey/go-algorithms/go_awesome/gophercies/16_twitter/contest"
-	"github.com/yurichsergey/go-algorithms/go_awesome/gophercies/16_twitter/store"
-	"github.com/yurichsergey/go-algorithms/go_awesome/gophercies/16_twitter/twitter"
+	"github.com/joho/godotenv"
+
+	"16_twitter/contest"
+	"16_twitter/store"
+	"16_twitter/twitter"
 )
 
 func main() {
@@ -41,11 +43,18 @@ func main() {
 
 	fmt.Printf("Loaded %d retweeters from file: %s\n", len(usernamesSaved), filePath)
 
-	// url := "https://api.twitter.com"
-	// token := os.Getenv("TWITTER_BEARER_TOKEN")
+	if err := godotenv.Load(); err != nil {
+		fmt.Fprintf(os.Stderr, "error loading .env file: %v\n", err)
+		os.Exit(1)
+	}
 
-	url := "http://localhost:8080"
-	token := "test-token" // test token for local testing
+	url := os.Getenv("TWITTER_BEARER_URL")
+	token := os.Getenv("TWITTER_BEARER_TOKEN")
+
+	if url == "" || token == "" {
+		fmt.Fprintln(os.Stderr, "error: TWITTER_BEARER_URL and TWITTER_BEARER_TOKEN must be set in .env file")
+		os.Exit(1)
+	}
 
 	client := twitter.NewClient(http.DefaultClient, url, token)
 	usernamesNew, err := client.Retweeters(context.Background(), tweetID)
