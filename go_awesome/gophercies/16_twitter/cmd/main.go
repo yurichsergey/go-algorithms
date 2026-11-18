@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 
@@ -22,6 +23,11 @@ func main() {
 	var pickCount int
 	flag.IntVar(&pickCount, "pick", 0, "Number of winners to pick from the retweeters list")
 
+	var every time.Duration
+	flag.DurationVar(&every, "every", 5*time.Minute, "How often to poll")
+	var runFor time.Duration
+	flag.DurationVar(&runFor, "for", 0, "Total polling time; 0 disables polling")
+
 	flag.Parse()
 
 	if tweetID == "" {
@@ -33,7 +39,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	if every <= 0 {
+		fmt.Fprintln(os.Stderr, "error: polling interval must be greater than zero")
+		os.Exit(1)
+	}
+
+	if runFor < 0 {
+		fmt.Fprintln(os.Stderr, "error: total polling time cannot be negative")
+		os.Exit(1)
+	}
+
 	fmt.Printf("tweet=%s, file=%s, pick=%d\n", tweetID, filePath, pickCount)
+	fmt.Printf("every=%s, for=%s\n", every, runFor)
 
 	usernamesSaved, err := store.Load(filePath)
 	if err != nil {
