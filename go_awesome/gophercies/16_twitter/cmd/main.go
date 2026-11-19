@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -52,14 +53,54 @@ func main() {
 	fmt.Printf("tweet=%s, file=%s, pick=%d\n", tweetID, filePath, pickCount)
 	fmt.Printf("every=%s, for=%s\n", every, runFor)
 
-	usernamesNew, err := updateRetweeters(context.Background(), filePath, tweetID)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error updating retweeters: %v\n", err)
-		os.Exit(1)
+	var usernames []string
+	if runFor == 0 {
+		updated, err := updateRetweeters(context.Background(), filePath, tweetID)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "poll: error updating retweeters: %v\n", err)
+			os.Exit(1)
+		}
+		usernames = updated
+	} else {
+		signalCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+		defer stop()
+
+		runCtx, cancel := context.WithTimeout(signalCtx, runFor)
+		defer cancel()
+
+		ticker := time.NewTicker(every)
+		defer ticker.Stop()
+
+		poll := func(ctx context.Context) {
+			updated, err := updateRetweeters(ctx, filePath, tweetID)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "poll: error updating retweeters: %v\n", err)
+				return // retry on the next tick
+			}
+			usernames = updated
+		}
+
+		poll(runCtx) // don't wait for the first tick, poll immediately
+
+		pollingLoop:
+			for {
+				select {
+				case <-runCtx.Done():
+					// If the context is done, we exit the loop; distinguish between timeout and interrupt Ctrl+C
+					fmt.Println("Polling finished.")
+					break pollingLoop
+				case <-ticker.C:
+					poll(runCtx)
+				}
+			}
+
+		finalCtx, finalCancel := context.WithTimeout(context.Background(), 15*time.Second)
+		poll(finalCtx) // final poll to ensure we have the latest data
+		finalCancel()
 	}
 
 	if pickCount > 0 {
-		winners, err := contest.Pick(usernamesNew, pickCount)
+		winners, err := contest.Pick(usernames, pickCount)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error picking winners: %v\n", err)
 			os.Exit(5)
