@@ -53,6 +53,8 @@ func main() {
 	fmt.Printf("tweet=%s, file=%s, pick=%d\n", tweetID, filePath, pickCount)
 	fmt.Printf("every=%s, for=%s\n", every, runFor)
 
+	interrupted := false
+
 	var usernames []string
 	if runFor == 0 {
 		updated, err := updateRetweeters(context.Background(), filePath, tweetID)
@@ -82,24 +84,26 @@ func main() {
 
 		poll(runCtx) // don't wait for the first tick, poll immediately
 
-		pollingLoop:
-			for {
-				select {
-				case <-runCtx.Done():
-					// If the context is done, we exit the loop; distinguish between timeout and interrupt Ctrl+C
-					fmt.Println("Polling finished.")
-					break pollingLoop
-				case <-ticker.C:
-					poll(runCtx)
-				}
+	pollingLoop:
+		for {
+			select {
+			case <-runCtx.Done():
+				// If the context is done, we exit the loop; distinguish between timeout and interrupt Ctrl+C
+				fmt.Println("Polling finished.")
+				break pollingLoop
+			case <-ticker.C:
+				poll(runCtx)
 			}
+		}
+
+		interrupted = signalCtx.Err() != nil
 
 		finalCtx, finalCancel := context.WithTimeout(context.Background(), 15*time.Second)
 		poll(finalCtx) // final poll to ensure we have the latest data
 		finalCancel()
 	}
 
-	if pickCount > 0 {
+	if pickCount > 0 && !interrupted {
 		winners, err := contest.Pick(usernames, pickCount)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error picking winners: %v\n", err)
