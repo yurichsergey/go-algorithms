@@ -82,6 +82,13 @@ func main() {
 			usernames = updated
 		}
 
+		var err error
+		usernames, err = store.Load(filePath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error loading retweeters from file: %v\n", err)
+			os.Exit(1)
+		}
+
 		poll(runCtx) // don't wait for the first tick, poll immediately
 
 	pollingLoop:
